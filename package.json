@@ -8,5 +8,29 @@
     "createdAt": "2023-03-30T13:20:37.337Z",
     "version": "5.6.0",
     "commit": "ffa75c8b2bede153844195479abeff01f3e34227"
+  },
+  "description": "Linha de comandos para ler arquivos markdown e detectar links válidos",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "jest --verbose --coverage",
+    "eslint": "eslint *.js test/"
+  },
+  "keywords": [
+    "node",
+    "markdown",
+    "API",
+    "CLI"
+  ],
+  "author": "Edimara Arcanjo",
+  "license": "MIT",
+  "devDependencies": {
+    "eslint": "^8.39.0",
+    "jest": "^29.5.0"
+  },
+  "dependencies": {
+    "chalk": "^5.2.0"
   }
 }
