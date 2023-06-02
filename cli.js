@@ -1,27 +1,29 @@
 #!/usr/bin/env node
 
 const mdLinks = require("./mdlinks");
+const fetch = require("node-fetch");
+
 const file = process.argv[2];
 const options = {
   validate: process.argv.includes("--validate"),
   stats: process.argv.includes("--stats")
-}
-
+};
 
 mdLinks(file, options)
-  .then((arr) => {
+  .then((result) => {
     if (options.stats) {
-      console.log(`Total: ${arr.length}`);
-      const uniqueLinks = new Set(arr.map(el => el.href));
-      console.log(`Unique: ${uniqueLinks.size}`);
+      console.log(`Total: ${result.total}`);
+      console.log(`Unique: ${result.unique}`);
+    } else {
+      result.forEach((link) => {
+        if (options.validate) {
+          console.log(`${link.text} ${link.href} ${link.status}`);
+        } else {
+          console.log(`${link.text} ${link.href}`);
+        }
+      });
     }
 
-    arr.forEach(el => {
-      if (options.validate) {
-        console.log(`${el.text} ${el.href} ${el.status}`);
-      } else {
-        console.log(`${el.text} ${el.href}`);
-      }
-    });
   })
-  .catch((err) => console.log(err));
+  .catch((err) => console.error(err));
+

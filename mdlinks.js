@@ -1,49 +1,53 @@
 const fs = require("fs");
-const {link} = require("fs/promises");
+const { link } = require("fs/promises");
+const fetch = require("node-fetch");
+
+const extractLinks = (data, pathFile) => {
+  const regex = /\[(\S.*)\]\((http.*?\))/gm;
+  const links = data.match(regex) || [];
+  return links.map((link) => {
+    const text = link.match(/\[(\S.*)\]/)[1];
+    const href = link.match(/\((http.*)\)/)[1];
+    return { text, href, file:pathFile };
+  });
+};
+
+const validateLink = (link) => {
+  return fetch(link.href)
+    .then((response) => {
+      if (response.status === 200) {
+        return { text: link.text, href: link.href, file: link.file, status: "ok" };
+      } else {
+        return { text: link.text, href: link.href, file: link.file, status: "fail" };
+      }
+    })
+    .catch((error) => {
+      return { ...link, status: "fail", error: error.message };
+    });
+};
+
+const getStats = (links) => {
+  const uniqueLinks = new Set(links.map((link) => link.href));
+  return { total: links.length, unique: uniqueLinks.size };
+};
 
 const mdLinks = (pathFile, options) => {
-  const regex = /\[(\S.*)\]\((http.*?\))/gm;
-  const arr = [];
-
   return new Promise((resolve, reject) => {
     fs.readFile(pathFile, "utf8", (err, data) => {
       if (err) {
         reject(err.message);
       } else {
-        const links = data.match(regex);
-        links.forEach((link) => {
-          const text = link.match(/\[(\S.*)\]/)[1];
-          const href = link.match(/\((http.*)\)/)[1];
-          const file = pathFile;
-          arr.push({ text, href, file });
-        });
+        const links = extractLinks(data, pathFile);
+
         if (options.validate) {
-          Promise.all(
-            arr.map((link) => {
-              return fetch(link.href)
-                .then((response) => {
-                  if (response.status === 200) {
-                    return { text: link.text, href: link.href, file: link.file, status: "ok" };
-                  } else {
-                    return { text: link.text, href: link.href, file: link.file, status: "fail" };
-                  }
-                })
-                .catch((error) => {
-                    return { text: link.text, href: link.href, file: link.file, status: "fail", error: error.message };
-                });
-            })
-          )
+          Promise.all(links.map(validateLink))
             .then(resolve)
             .catch(reject);
+        } else if (options.stats) {
+          const stats = getStats(links);
+          resolve(stats);
         } else {
-          if (options.stats) {
-            const linksUnicos = new Set(links);
-            resolve({ total: links.length, unicos: linksUnicos.size });
-          }
-
-          else {
-            resolve(arr);
-          }
+          resolve(links);
         }
       }
     });
@@ -51,5 +55,3 @@ const mdLinks = (pathFile, options) => {
 };
 
 module.exports = mdLinks;
-
-
