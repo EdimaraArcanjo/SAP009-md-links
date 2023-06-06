@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-const mdLinks = require("./mdlinks");
+const {mdLinks} = require("./mdlinks");
 const fetch = require("node-fetch");
 
 const file = process.argv[2];

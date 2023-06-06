@@ -15,6 +15,7 @@ const extractLinks = (data, pathFile) => {
 const validateLink = (link) => {
   return fetch(link.href)
     .then((response) => {
+      console.log(response.status)
       if (response.status === 200) {
         return { text: link.text, href: link.href, file: link.file, status: "ok" };
       } else {
@@ -28,8 +29,13 @@ const validateLink = (link) => {
 
 const getStats = (links) => {
   const uniqueLinks = new Set(links.map((link) => link.href));
-  return { total: links.length, unique: uniqueLinks.size };
+  return {
+    total: links.length,
+    unique: uniqueLinks.size,
+  };
 };
+
+
 
 const mdLinks = (pathFile, options) => {
   return new Promise((resolve, reject) => {
@@ -54,4 +60,4 @@ const mdLinks = (pathFile, options) => {
   });
 };
 
-module.exports = mdLinks;
+module.exports = {mdLinks, extractLinks, getStats, validateLink};
