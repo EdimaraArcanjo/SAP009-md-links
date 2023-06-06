@@ -1,9 +1,13 @@
 const { debug } = require('console');
 const {mdLinks, getStats, validateLink, extractLinks} = require('../mdlinks.js');
-
 const fs = require('fs')
+const fetch = require('node-fetch');
 
+
+jest.mock('node-fetch');
 jest.mock('fs')
+
+
 
 describe('extractLinks', () => {
   test('should extract links from data', () => {
@@ -130,7 +134,11 @@ describe('validateLink', () => {
       status: 200
     };
 
-    jest.spyOn(global, 'fetch').mockResolvedValueOnce(response);
+    fetch.mockImplementation(()=> Promise.resolve({
+      status: 200,
+     }))
+
+
 
     const result = await validateLink(link);
 
@@ -141,7 +149,6 @@ describe('validateLink', () => {
       status: 'ok'
     });
 
-    global.fetch.mockRestore();
   });
 
   test('return a failed link object when the response status is not 200', async () => {
@@ -151,11 +158,9 @@ describe('validateLink', () => {
       file: 'example.md'
     };
 
-    const responseFail = {
-      status: 404
-    };
-    global.fetch = jest.fn(() => Promise.resolve(responseFail));
-
+    fetch.mockImplementation(()=> Promise.resolve({
+      status: 404,
+     }))
 
     const result = await validateLink(link);
 
@@ -166,6 +171,5 @@ describe('validateLink', () => {
       status: 'fail'
     });
 
-    global.fetch.mockRestore();
   });
 });
