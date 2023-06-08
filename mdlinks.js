@@ -15,7 +15,6 @@ const extractLinks = (data, pathFile) => {
 const validateLink = (link) => {
   return fetch(link.href)
     .then((response) => {
-      console.log(response.status)
       if (response.status === 200) {
         return { text: link.text, href: link.href, file: link.file, status: "ok" };
       } else {
