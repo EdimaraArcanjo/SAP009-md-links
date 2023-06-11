@@ -1,5 +1,4 @@
 const fs = require("fs");
-const { link } = require("fs/promises");
 const fetch = require("node-fetch");
 
 const extractLinks = (data, pathFile) => {

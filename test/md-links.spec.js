@@ -10,7 +10,7 @@ jest.mock('fs')
 
 
 describe('extractLinks', () => {
-  test('should extract links from data', () => {
+  test('extracts links from data', () => {
     const data = `
       text text [link 1](https://www.link1.com) \n text text [link 2](https://www.link2.com) \n text text [link 3](https://www.link3.com)
     `;
@@ -37,7 +37,7 @@ describe('extractLinks', () => {
 
 describe('getStats', () => {
 
-  test('should return statistics object with total and unique link counts', () => {
+  test('statistics object with total and unique link counts', () => {
     const links = [
       {
         href: 'https://facebook.com',
@@ -64,9 +64,6 @@ describe('getStats', () => {
     });
   });
 });
-
-
-
 
 
 describe('mdLinks', () => {
